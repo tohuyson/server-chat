@@ -8,4 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class ChatParticipant extends Model
 {
     use HasFactory;
+
+    protected $table = 'chat_participants';
+    protected $guarded = ['id'];
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }
