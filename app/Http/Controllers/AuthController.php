@@ -26,7 +26,7 @@ class AuthController extends Controller
         $data['username'] = strstr($data['email'], '@', true);
 
         $user = User::create($data);
-        $token = $user->crateToken(User::USER_TOKEN);
+        $token = $user->createToken(User::USER_TOKEN);
 
         return $this->success([
             'user' => $user,
@@ -109,7 +109,7 @@ class AuthController extends Controller
 
     public function logout(Request $request): JsonResponse
     {
-        $request->user()->currentAccestToken()->delete();
+        $request->user()->currentAccessToken()->delete();
         return $this->success(null, 'Logout successfully!');
     }
 }
