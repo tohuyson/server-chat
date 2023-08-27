@@ -11,6 +11,7 @@ use App\Models\ChatMessage;
 use App\Models\Chat;
 use App\Models\User;
 use App\Events\NewMessageSent;
+use Illuminate\Support\Facades\Log;
 
 
 class ChatMessageController extends Controller
@@ -29,7 +30,7 @@ class ChatMessageController extends Controller
         $currentPage = $data['page'];
         $pageSize = $data['page_size'] ?? 15;
 
-        $messages = ChatMessage::where('chat_id',$chatId)
+        $messages = ChatMessage::where('chat_id', $chatId)
             ->with('user')
             ->latest('created_at')
             ->simplePaginate(
@@ -60,7 +61,7 @@ class ChatMessageController extends Controller
         /// TODO send broadcast event to pusher and send notification to onesignal services
         $this->sendNotificationToOther($chatMessage);
 
-        return $this->success($chatMessage,'Message has been sent successfully.');
+        return $this->success($chatMessage, 'Message has been sent successfully.');
     }
 
     /**
@@ -76,22 +77,22 @@ class ChatMessageController extends Controller
         $user = auth()->user();
         $userId = $user->id;
 
-        $chat = Chat::where('id',$chatMessage->chat_id)
-                ->with(['participants'=>function($query)use($userId){
-                    $query->where('user_id','!=',$userId);
-                }])
-                ->first();
-        if(count($chat->participants)>0){
+        $chat = Chat::where('id', $chatMessage->chat_id)
+            ->with(['participants' => function ($query) use ($userId) {
+                $query->where('user_id', '!=', $userId);
+            }])
+            ->first();
+        if (count($chat->participants) > 0) {
             $otherUserId = $chat->participants[0]->user_id;
 
-            $otherUser = User::where('id',$otherUserId)->first();
+            $otherUser = User::where('id', $otherUserId)->first();
             $otherUser->sendNewMessageNotification([
-                'messageData'=>[
-                    'senderName'=>$user->username,
-                    'message'=>$chatMessage->message,
-                    'chatId'=>$chatMessage->chat_id
-                ]
-                ]);
+                'messageData' => [
+                    'senderName' => $user->username,
+                    'message' => $chatMessage->message,
+                    'chatId' => $chatMessage->chat_id
+                ],
+            ]);
         }
     }
 }

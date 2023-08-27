@@ -2,13 +2,12 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum\HasApiTokens;
-use App\Models\Chat;
 use App\Notifications\MessageSent;
 
 class User extends Authenticatable
@@ -30,7 +29,7 @@ class User extends Authenticatable
     const USER_TOKEN = "userToken";
 
     public function chats(): HasMany {
-        return $this->hasMany(Chat::class, 'created-by');
+        return $this->hasMany(Chat::class, 'created_by');
     }
 
     public function sendNewMessageNotification(array $data) : void {

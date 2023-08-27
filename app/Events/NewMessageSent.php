@@ -17,26 +17,27 @@ class NewMessageSent implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
+    public ChatMessage $chatMessage;
+
     /**
      * NewMessageSent constructor
      *
      * @param ChatMessage $chatMessage
      */
-    public function __construct(private ChatMessage $chatMessage)
+    public function __construct(ChatMessage $chatMessage)
     {
-        //
+        $this->chatMessage = $chatMessage;
     }
+
 
     /**
      * Get the channels the event should broadcast on.
      *
-     * @return array<int, \Illuminate\Broadcasting\Channel>
+     * @return PrivateChannel[]
      */
-    public function broadcastOn(): array
+    public function broadcastOn()
     {
-        return [
-            new PrivateChannel('chat.',$this->chatMessage->chat_id)
-        ];
+        return [new PrivateChannel('chat.'. $this->chatMessage->chat_id)];
     }
 
     /**
